@@ -13,6 +13,12 @@ namespace API.Services
 {
     public class UserService(DataContext _repository, ITokenTool _tokenTool) : IUserService
     {
+        public async Task<AppUser?> GetAccont(int id)
+        {
+            // SELECT * FROM Users WHERE Id = x LIMIT 1;
+            return await _repository.Users.FirstOrDefaultAsync(user => user.Id == id);
+        }
+
         public async Task<IEnumerable<AppUser>> GetAll()
         {
             var users = await _repository.Users.AsNoTracking().ToListAsync();

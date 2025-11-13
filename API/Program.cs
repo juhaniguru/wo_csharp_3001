@@ -1,8 +1,12 @@
 using System.Text;
 using API.Data;
 using API.Interfaces;
+using API.Middlewares;
+using API.Policies.Handlers;
+using API.Policies.Requirements;
 using API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -45,10 +49,18 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 
 });
 
+
+
 builder.Services.AddAuthorization(option =>
 {
     option.AddPolicy("RequireAdminRole", policy => policy.RequireRole("admin"));
+    option.AddPolicy("Require1000Xp", policy => policy.Requirements.Add(new XpRequirement(1000)));
+    option.AddPolicy("Require100Xp", policy => policy.Requirements.Add(new XpRequirement(100)));
 });
+
+builder.Services.AddScoped<IAuthorizationHandler, XpAuthorizationHandler>();
+
+
 
 // alapuolella: builder.Services.AddDbContext<DataContext>(opt =>
 // {
@@ -62,6 +74,7 @@ builder.Services.AddDbContext<DataContext>(opt =>
 });
 
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<RequireLoggedInUserMiddleware>();
 
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
@@ -93,5 +106,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseMiddleware<RequireLoggedInUserMiddleware>();
 
 app.Run();

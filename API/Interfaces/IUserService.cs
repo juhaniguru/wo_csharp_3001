@@ -10,5 +10,7 @@ namespace API.Interfaces
 
         Task<string> Login(string username, string password);
         Task<IEnumerable<AppUser>> GetAll();
+
+        Task<AppUser?> GetAccont(int id);
     }
 }

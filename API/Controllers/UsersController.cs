@@ -1,16 +1,39 @@
 using API.CustomExceptions;
 using API.Dtos;
 using API.Interfaces;
+using API.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class UsersController(IUserService _userService, IMapper _mapper) : ControllerBase
+    
+    public class UsersController(IUserService _userService, IMapper _mapper, ILogger<UsersController> _logger) : ControllerBase
     {
+
+        [HttpGet("account")]
+        [Authorize]
+        public async Task<ActionResult> GetAccount()
+        {
+            
+            var loggedInUser = HttpContext.Items["loggedInUser"] as AppUser;
+            
+            return Ok(
+                _mapper.Map<UserDto>(loggedInUser)
+            );
+        }
+
+        [HttpGet("account/rewards")]
+        //[Authorize(Policy = "Require1000Xp")]
+        public async Task<ActionResult> CollectRewards()
+        {
+            return await Task.FromResult(Ok());
+        }
+
         // localhost:portti/api/users/
         [HttpGet]
         [Authorize(Policy = "RequireAdminRole")]
@@ -29,6 +52,7 @@ namespace API.Controllers
         }
 
         [HttpPost("login")]
+        [AllowAnonymous]
         public async Task<ActionResult<LoginRes>> Login(LoginReq requestData)
         {
             try

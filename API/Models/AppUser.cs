@@ -16,6 +16,8 @@ namespace API.Models
         public required byte[] PasswordSalt { get; set; }
         public required byte[] HashedPassword { get; set; }
 
+        public int Xp { get; set; }
+
         public ICollection<Blog> Blogs { get; set; } = new List<Blog>();
     }
 }

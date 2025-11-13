@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using API.CustomExceptions;
 using API.Dtos;
 using API.Interfaces;
+using API.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -46,15 +47,9 @@ namespace API.Controllers
         {
             try
             {
-                var idClaim = User.Claims.First(c => c.Type == JwtRegisteredClaimNames.Sub);
-                var id = idClaim.Value;
-                if (id == null)
-                {
-                    return NotFound();
-                }
-                var idInt = int.Parse(id);
-
-                var blog = await _blogService.Create(requestData, idInt);
+                
+                var loggedInUser = HttpContext.Items["loggedInUser"] as AppUser;
+                var blog = await _blogService.Create(requestData, loggedInUser!.Id);
                 return Ok(
                     _mapper.Map<BlogDto>(blog)
                 );
