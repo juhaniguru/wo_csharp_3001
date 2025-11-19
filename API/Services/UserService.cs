@@ -16,7 +16,7 @@ namespace API.Services
         public async Task<AppUser?> GetAccont(int id)
         {
             // SELECT * FROM Users WHERE Id = x LIMIT 1;
-            return await _repository.Users.FirstOrDefaultAsync(user => user.Id == id);
+            return await _repository.Users.AsNoTracking().FirstOrDefaultAsync(user => user.Id == id);
         }
 
         public async Task<IEnumerable<AppUser>> GetAll()

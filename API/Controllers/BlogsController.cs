@@ -50,9 +50,24 @@ namespace API.Controllers
                 
                 var loggedInUser = HttpContext.Items["loggedInUser"] as AppUser;
                 var blog = await _blogService.Create(requestData, loggedInUser!.Id);
+                //return Ok(
+                  //  _mapper.Map<BlogDto>(blog)
+                //);
+
+                // JsonSerializer yrittää populoida automaattiseti relatiivisen datan (AppUser)
+
+                // Blog -> AppUser -> Blog -> AppUser -> Blog -> AppUser ...
+
+                //return Ok(blog);
+
+                // BlogDto -> UserDto -> Loppu
+
                 return Ok(
                     _mapper.Map<BlogDto>(blog)
                 );
+
+
+
             } catch(Exception e)
             {
                 return Problem(title: "error fetching blogs", detail: e.Message, statusCode: StatusCodes.Status500InternalServerError);
